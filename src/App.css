@@ -71,6 +71,10 @@
   color: white;
 }
 
+.run-button {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
 .button-desc {
   font-size: 0.9rem;
   font-weight: normal;
@@ -99,7 +103,45 @@
   font-size: 1.5rem;
 }
 
-.back-button, .copy-button {
+.header-actions {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.search-input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #3e3e42;
+  border-radius: 6px;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  min-width: 200px;
+}
+
+.search-input:focus {
+  border-color: #0e639c;
+  background: #252526;
+}
+
+.search-input::placeholder {
+  color: #6a6a6a;
+}
+
+.search-results-bar {
+  padding: 0.5rem 2rem;
+  background: #2d2d30;
+  color: #4facfe;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.back-button,
+.copy-button,
+.clear-button,
+.run-button-header {
   padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 6px;
@@ -122,6 +164,23 @@
   background: #0e639c;
   color: white;
 }
+clear-button {
+  background: #6a6a6a;
+  color: white;
+}
+
+.clear-button:hover {
+  background: #7a7a7a;
+}
+
+.run-button-header {
+  background: #16a34a;
+  color: white;
+}
+
+.run-button-header:hover {
+  background: #15803d;
+}
 
 .copy-button:hover {
   background: #1177bb;
@@ -130,16 +189,17 @@
 .text-boxes {
   display: flex;
   flex: 1;
-  gap: 1px;
+  gap: 0;
   background: #3e3e42;
   overflow: hidden;
 }
 
 .text-box-wrapper {
-  flex: 1;
   display: flex;
   flex-direction: column;
   background: #1e1e1e;
+  min-width: 200px;
+    overflow: hidden;
 }
 
 .text-box-wrapper label {
@@ -148,6 +208,34 @@
   color: #cccccc;
   font-weight: 500;
   border-bottom: 1px solid #3e3e42;
+  flex-shrink: 0;
+  }
+  
+  .resize-handle {
+    width: 10px;
+    background: #2d2d30;
+    cursor: col-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+  }
+  
+  .resize-handle:hover {
+    background: #3e3e42;
+  }
+  
+  .resize-handle:hover .resize-line {
+    background: #0e639c;
+  }
+  
+  .resize-line {
+    width: 2px;
+    height: 100%;
+    background: #3e3e42;
+    transition: background 0.2s ease;
 }
 
 .text-box {
@@ -172,7 +260,108 @@
   background: #252526;
 }
 
-/* Scrollbar Styles */
+/* Logs Container Styles */
+.logs-container {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #1e1e1e;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  color: #d4d4d4;
+}
+
+.logs-placeholder {
+  color: #6a6a6a;
+  font-style: italic;
+}
+
+.log-entry {
+  padding: 0.5rem;
+  margin-bottom: 0.3rem;
+  border-left: 3px solid transparent;
+  border-radius: 3px;
+  display: flex;
+  gap: 0.8rem;
+}
+
+.log-type {
+  font-weight: bold;
+  min-width: 80px;
+}
+
+.log-message {
+  white-space: pre-wrap;
+  word-break: break-word;
+  flex: 1;
+}
+
+.log-log {
+  background: #1a2332;
+  border-left-color: #4facfe;
+}
+
+.log-log .log-type {
+  color: #4facfe;
+}
+
+.log-error {
+  background: #2d1a1a;
+  border-left-color: #f87171;
+}
+
+.log-error .log-type {
+  color: #f87171;
+}
+
+.log-warn {
+  background: #2d2a1a;
+  border-left-color: #fbbf24;
+}
+
+.log-warn .log-type {
+  color: #fbbf24;
+}
+
+.log-info {
+  background: #1a2d2a;
+  border-left-color: #34d399;
+}
+
+.log-info .log-type {
+  color: #34d399;
+}
+
+.log-success {
+  background: #1a2d1f;
+  border-left-color: #10b981;
+  font-weight: 500;
+}
+
+.log-success .log-type {
+  color: #10b981;
+}
+
+.logs-container::-webkit-scrollbar {
+  width: 14px;
+}
+
+.logs-container::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.logs-container::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 10px;
+  border: 3px solid #1e1e1e;
+}
+
+.logs-container::-webkit-scrollbar-thumb:hover {
+  background: #4e4e4e;
+}
+
+* Scrollbar Styles */
 .text-box::-webkit-scrollbar {
   width: 14px;
   height: 14px;
