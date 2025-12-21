@@ -15,13 +15,42 @@ function App() {
     setInputCode(value)
     
     if (mode === 'add') {
-      // Replace actual newlines with \n string and double quotes with single quotes
-      const converted = value.replace(/\n/g, '\\n').replace(/"/g, "'")
+      // Properly escape for JSON payload while preserving original code structure
+      let converted = value
+        // Remove whitespace around newlines first
+        .replace(/[ \t]*\n[ \t]*/g, '\n')
+        // Now do JSON escaping in the correct order:
+        // 1. Escape backslashes (MUST be first to avoid double-escaping)
+        .replace(/\\/g, '\\\\')
+        // 2. Escape double quotes
+        .replace(/"/g, '\\"')
+        // 3. Convert actual newlines to \n
+        .replace(/\n/g, '\\n')
+        // 4. Escape control characters that break JSON
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t')
+        .replace(/\f/g, '\\f')
+        .replace(/\b/g, '\\b')
+
       setOutputCode(converted)
     } else if (mode === 'remove') {
-      // Replace \n string with actual newlines
-      const converted = value.replace(/\\n/g, '\n')
-      setOutputCode(converted)
+      // Reverse the escaping: convert \n back to actual newlines and unescape
+      try {
+        // Try using JSON.parse for proper unescaping
+        const converted = JSON.parse('"' + value + '"')
+        setOutputCode(converted)
+      } catch (e) {
+        // If JSON parsing fails, do manual unescaping in reverse order
+        let converted = value
+          .replace(/\\n/g, '\n')
+          .replace(/\\r/g, '\r')
+          .replace(/\\t/g, '\t')
+          .replace(/\\f/g, '\f')
+          .replace(/\\b/g, '\b')
+          .replace(/\\"/g, '"')
+          .replace(/\\\\/g, '\\') // Unescape backslashes last
+        setOutputCode(converted)
+      }
     }
   }
 
@@ -78,9 +107,28 @@ function App() {
       logOutput.push({ type: 'info', message: `Total Lines: ${totalLines}` })
       logOutput.push({ type: 'info', message: `Code Length: ${inputCode.length} characters` })
 
-      // Create a function from the code and execute it
-      const func = new Function(inputCode)
-      const result = func()
+      let func, result
+      let syntaxErrorInfo = null
+
+      // Try to detect syntax errors with better line tracking
+      try {
+        // For better syntax error line detection, use eval with sourceURL
+        const wrappedCode = `(function(){\n${inputCode}\n})();\n//# sourceURL=user-code.js`
+        result = eval(wrappedCode)
+      } catch (evalError) {
+        // If eval fails, try Function constructor as fallback
+        if (evalError instanceof SyntaxError) {
+          syntaxErrorInfo = evalError
+          // Try to extract line number from syntax error message
+          const lineMatch = evalError.message.match(/line (\d+)/i)
+          if (lineMatch) {
+            syntaxErrorInfo.detectedLine = parseInt(lineMatch[1])
+          }
+          throw evalError
+        }
+        func = new Function(inputCode)
+        result = func()
+      }
 
       if (result !== undefined) {
         logOutput.push({ type: 'log', message: `Return value: ${typeof result === 'object' ? JSON.stringify(result, null, 2) : result}` })
@@ -89,6 +137,63 @@ function App() {
       logOutput.push({ type: 'info', message: '=== Code Execution Completed ===' })
       logOutput.push({ type: 'success', message: '✓ No errors detected - Code executed successfully!' })
     } catch (error) {
+      // Enhanced line number extraction
+      const extractLineNumber = (stack, errorMsg) => {
+        if (!stack) return null
+
+        // Try multiple patterns to extract line numbers
+        let match
+
+        // Pattern 1: <anonymous>:line:column
+        match = stack.match(/<anonymous>:(\d+):(\d+)/)
+        if (match) {
+          return { line: parseInt(match[1]), column: parseInt(match[2]) }
+        }
+
+        // Pattern 2: user-code.js:line:column
+        match = stack.match(/user-code\.js:(\d+):(\d+)/)
+        if (match) {
+          // Adjust for wrapped code (subtract 1 for the wrapper function line)
+          return { line: Math.max(1, parseInt(match[1]) - 1), column: parseInt(match[2]) }
+        }
+
+        // Pattern 3: eval at line
+        match = stack.match(/eval.*?:(\d+):(\d+)/)
+        if (match) {
+          return { line: parseInt(match[1]), column: parseInt(match[2]) }
+        }
+
+        // Pattern 4: Check error message for line info
+        if (errorMsg) {
+          match = errorMsg.match(/line (\d+)/i)
+          if (match) {
+            return { line: parseInt(match[1]), column: null }
+          }
+        }
+
+        return null
+      }
+
+      const lineInfo = extractLineNumber(error.stack, error.message)
+      let errorLine = lineInfo ? lineInfo.line : null
+      let errorColumn = lineInfo ? lineInfo.column : null
+
+      // For syntax errors in single-line code, try to find the position
+      if (error instanceof SyntaxError && totalLines === 1 && !errorLine) {
+        // Try to parse the error message for position hints
+        const posMatch = error.message.match(/position (\d+)/)
+        if (posMatch) {
+          errorColumn = parseInt(posMatch[1])
+          errorLine = 1
+        }
+      }
+
+      // Get the actual line of code that caused the error
+      let problematicCode = null
+      if (errorLine && errorLine <= lines.length) {
+        problematicCode = lines[errorLine - 1]
+      }
+
       // Detailed error reporting
       logOutput.push({ type: 'info', message: '=== Code Execution Failed ===' })
 
@@ -98,6 +203,49 @@ function App() {
         logOutput.push({ type: 'error', message: '╚══════════════════════════════════════╝' })
         logOutput.push({ type: 'error', message: `Error Type: SyntaxError` })
         logOutput.push({ type: 'error', message: `Message: ${error.message}` })
+
+        // Special handling for single-line code
+        if (totalLines === 1) {
+          logOutput.push({ type: 'warn', message: `\n⚠️  Note: Code appears to be on a single line (${inputCode.length} characters)` })
+          logOutput.push({ type: 'warn', message: `   This makes it difficult to pinpoint the exact error location.` })
+          logOutput.push({ type: 'warn', message: `   Tip: If you used "Add \\n", try using "Remove \\n" first to see the code properly formatted.` })
+
+          // Try to show the problematic area
+          if (errorColumn) {
+            const start = Math.max(0, errorColumn - 40)
+            const end = Math.min(inputCode.length, errorColumn + 40)
+            const snippet = inputCode.substring(start, end)
+            const pointerPos = errorColumn - start
+
+            logOutput.push({ type: 'error', message: `\n📍 Error near position ${errorColumn}:` })
+            logOutput.push({ type: 'error', message: `   ...${snippet}...` })
+            logOutput.push({ type: 'error', message: `   ${' '.repeat(pointerPos + 3)}^` })
+          } else {
+            // Show first part of the code
+            const preview = inputCode.length > 100 ? inputCode.substring(0, 100) + '...' : inputCode
+            logOutput.push({ type: 'error', message: `\n📝 Code Preview:` })
+            logOutput.push({ type: 'error', message: `   ${preview}` })
+          }
+        } else if (errorLine) {
+          logOutput.push({ type: 'error', message: `\n📍 Error Location:` })
+          logOutput.push({ type: 'error', message: `   Line: ${errorLine}${errorColumn ? `, Column: ${errorColumn}` : ''}` })
+
+          if (problematicCode) {
+            logOutput.push({ type: 'error', message: `\n📝 Problematic Code:` })
+            logOutput.push({ type: 'error', message: `   ${errorLine} | ${problematicCode.trim()}` })
+            if (errorColumn) {
+              const pointer = ' '.repeat(String(errorLine).length + 3 + errorColumn) + '^'
+              logOutput.push({ type: 'error', message: pointer })
+            }
+          }
+        } else {
+          logOutput.push({ type: 'warn', message: `\n⚠️  Could not determine exact line number from error` })
+          // Show first few lines anyway
+          logOutput.push({ type: 'error', message: `\n📝 Code Preview (first 5 lines):` })
+          for (let i = 0; i < Math.min(5, totalLines); i++) {
+            logOutput.push({ type: 'error', message: `   ${i + 1} | ${lines[i]}` })
+          }
+        }
 
         // Provide helpful context based on error message
         if (error.message.includes('import')) {
@@ -122,8 +270,29 @@ function App() {
         logOutput.push({ type: 'error', message: '╚══════════════════════════════════════╝' })
         logOutput.push({ type: 'error', message: `Error Type: ReferenceError` })
         logOutput.push({ type: 'error', message: `Message: ${error.message}` })
+
+        if (errorLine) {
+          logOutput.push({ type: 'error', message: `\n📍 Error Location:` })
+          logOutput.push({ type: 'error', message: `   Line: ${errorLine}${errorColumn ? `, Column: ${errorColumn}` : ''}` })
+
+          if (problematicCode) {
+            logOutput.push({ type: 'error', message: `\n📝 Problematic Code:` })
+            logOutput.push({ type: 'error', message: `   ${errorLine} | ${problematicCode.trim()}` })
+            if (errorColumn) {
+              const pointer = ' '.repeat(String(errorLine).length + 3 + errorColumn) + '^'
+              logOutput.push({ type: 'error', message: pointer })
+            }
+          }
+        }
+
         logOutput.push({ type: 'warn', message: `\nℹ️  Context: Variable or function not defined.` })
         logOutput.push({ type: 'warn', message: `   Solution: Check spelling or define the variable before using it.` })
+
+        // Try to extract the undefined variable name
+        const varMatch = error.message.match(/(\w+) is not defined/)
+        if (varMatch) {
+          logOutput.push({ type: 'warn', message: `   Undefined: "${varMatch[1]}"` })
+        }
 
       } else if (error instanceof TypeError) {
         logOutput.push({ type: 'error', message: '╔══════════════════════════════════════╗' })
@@ -131,6 +300,21 @@ function App() {
         logOutput.push({ type: 'error', message: '╚══════════════════════════════════════╝' })
         logOutput.push({ type: 'error', message: `Error Type: TypeError` })
         logOutput.push({ type: 'error', message: `Message: ${error.message}` })
+
+        if (errorLine) {
+          logOutput.push({ type: 'error', message: `\n📍 Error Location:` })
+          logOutput.push({ type: 'error', message: `   Line: ${errorLine}${errorColumn ? `, Column: ${errorColumn}` : ''}` })
+
+          if (problematicCode) {
+            logOutput.push({ type: 'error', message: `\n📝 Problematic Code:` })
+            logOutput.push({ type: 'error', message: `   ${errorLine} | ${problematicCode.trim()}` })
+            if (errorColumn) {
+              const pointer = ' '.repeat(String(errorLine).length + 3 + errorColumn) + '^'
+              logOutput.push({ type: 'error', message: pointer })
+            }
+          }
+        }
+
         logOutput.push({ type: 'warn', message: `\nℹ️  Context: Operation on incompatible type.` })
         logOutput.push({ type: 'warn', message: `   Solution: Verify data types and method availability.` })
 
@@ -140,15 +324,46 @@ function App() {
         logOutput.push({ type: 'error', message: '╚══════════════════════════════════════╝' })
         logOutput.push({ type: 'error', message: `Error Type: ${error.name || 'Unknown'}` })
         logOutput.push({ type: 'error', message: `Message: ${error.message}` })
+
+        if (errorLine) {
+          logOutput.push({ type: 'error', message: `\n📍 Error Location:` })
+          logOutput.push({ type: 'error', message: `   Line: ${errorLine}${errorColumn ? `, Column: ${errorColumn}` : ''}` })
+
+          if (problematicCode) {
+            logOutput.push({ type: 'error', message: `\n📝 Problematic Code:` })
+            logOutput.push({ type: 'error', message: `   ${errorLine} | ${problematicCode.trim()}` })
+            if (errorColumn) {
+              const pointer = ' '.repeat(String(errorLine).length + 3 + errorColumn) + '^'
+              logOutput.push({ type: 'error', message: pointer })
+            }
+          }
+        }
       }
 
-      // Stack trace
+      // Enhanced Stack trace with context
       if (error.stack) {
-        logOutput.push({ type: 'error', message: `\n📚 Stack Trace:` })
-        const stackLines = error.stack.split('\n').slice(0, 5) // Limit stack trace
+        logOutput.push({ type: 'error', message: `\n📚 Full Stack Trace:` })
+        const stackLines = error.stack.split('\n').slice(0, 8)
         stackLines.forEach(line => {
           logOutput.push({ type: 'error', message: `   ${line.trim()}` })
         })
+      }
+
+      // Show context around error line
+      if (errorLine && errorLine > 1) {
+        logOutput.push({ type: 'info', message: `\n📖 Code Context:` })
+
+        const startLine = Math.max(1, errorLine - 2)
+        const endLine = Math.min(totalLines, errorLine + 2)
+
+        for (let i = startLine; i <= endLine; i++) {
+          const lineCode = lines[i - 1]
+          const prefix = i === errorLine ? '❌' : '  '
+          logOutput.push({
+            type: i === errorLine ? 'error' : 'info',
+            message: `   ${prefix} ${i} | ${lineCode}`
+          })
+        }
       }
 
       logOutput.push({ type: 'error', message: `\n❌ Execution failed - Please fix the errors and try again.` })
@@ -185,6 +400,33 @@ function App() {
     setLogs([])
   }
 
+  const highlightText = (text, searchTerm) => {
+    if (!searchTerm) return text
+
+    const parts = []
+    const lowerText = text.toLowerCase()
+    const lowerSearch = searchTerm.toLowerCase()
+    let lastIndex = 0
+
+    let index = lowerText.indexOf(lowerSearch)
+    while (index !== -1) {
+      // Add text before match
+      if (index > lastIndex) {
+        parts.push({ text: text.substring(lastIndex, index), highlight: false })
+      }
+      // Add matched text
+      parts.push({ text: text.substring(index, index + searchTerm.length), highlight: true })
+      lastIndex = index + searchTerm.length
+      index = lowerText.indexOf(lowerSearch, lastIndex)
+    }
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push({ text: text.substring(lastIndex), highlight: false })
+    }
+
+    return parts
+  }
+
   const handleSearch = (term) => {
     setSearchTerm(term)
 
@@ -202,7 +444,7 @@ function App() {
       const inputLines = inputCode.split('\n')
       inputLines.forEach((line, index) => {
         if (line.toLowerCase().includes(searchLower)) {
-          inputMatches.push({ line: index + 1, text: line })
+          inputMatches.push({ line: index + 1, text: line, highlighted: highlightText(line, term) })
         }
       })
     }
@@ -211,14 +453,19 @@ function App() {
     if (mode === 'run') {
       logs.forEach((log, index) => {
         if (log.message.toLowerCase().includes(searchLower)) {
-          outputMatches.push({ line: index + 1, text: log.message, type: log.type })
+          outputMatches.push({
+            line: index + 1,
+            text: log.message,
+            type: log.type,
+            highlighted: highlightText(log.message, term)
+          })
         }
       })
     } else if (outputCode) {
       const outputLines = outputCode.split('\n')
       outputLines.forEach((line, index) => {
         if (line.toLowerCase().includes(searchLower)) {
-          outputMatches.push({ line: index + 1, text: line })
+          outputMatches.push({ line: index + 1, text: line, highlighted: highlightText(line, term) })
         }
       })
     }
@@ -332,30 +579,64 @@ function App() {
         <div className="text-boxes">
           <div className="text-box-wrapper" style={{ width: `${leftPanelWidth}%` }}>
             <label>JavaScript Code</label>
-            <textarea
-              className="text-box"
-              value={inputCode}
-              onChange={(e) => setInputCode(e.target.value)}
-              placeholder="Write or paste your JavaScript code here..."
-            />
+            {searchTerm && searchResults.input.length > 0 ? (
+              <div className="search-results-container">
+                {searchResults.input.map((match, idx) => (
+                  <div key={idx} className="search-result-item">
+                    <span className="result-line-number">Line {match.line}:</span>
+                    <div className="result-text">
+                      {match.highlighted.map((part, i) => (
+                        <span key={i} className={part.highlight ? 'highlight' : ''}>
+                          {part.text}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+                <textarea
+                  className="text-box"
+                  value={inputCode}
+                  onChange={(e) => setInputCode(e.target.value)}
+                  placeholder="Write or paste your JavaScript code here..."
+                />
+            )}
           </div>
           <div className="resize-handle" onMouseDown={handleMouseDown}>
             <div className="resize-line"></div>
           </div>
           <div className="text-box-wrapper" style={{ width: `${100 - leftPanelWidth}%` }}>
             <label>Output & Logs</label>
-            <div className="logs-container">
-              {logs.length === 0 ? (
-                <div className="logs-placeholder">Click "Run" to execute code and see output...</div>
-              ) : (
-                logs.map((log, index) => (
-                  <div key={index} className={`log-entry log-${log.type}`}>
-                    <span className="log-type">[{log.type.toUpperCase()}]</span>
-                    <span className="log-message">{log.message}</span>
+            {searchTerm && searchResults.output.length > 0 ? (
+              <div className="search-results-container">
+                {searchResults.output.map((match, idx) => (
+                  <div key={idx} className="search-result-item">
+                    <span className="result-line-number">Log {match.line}:</span>
+                    <div className="result-text">
+                      {match.highlighted.map((part, i) => (
+                        <span key={i} className={part.highlight ? 'highlight' : ''}>
+                          {part.text}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+                <div className="logs-container">
+                  {logs.length === 0 ? (
+                    <div className="logs-placeholder">Click "Run" to execute code and see output...</div>
+                  ) : (
+                    logs.map((log, index) => (
+                      <div key={index} className={`log-entry log-${log.type}`}>
+                        <span className="log-type">[{log.type.toUpperCase()}]</span>
+                        <span className="log-message">{log.message}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+            )}
           </div>
         </div>
       </div>
@@ -386,24 +667,58 @@ function App() {
       <div className="text-boxes">
         <div className="text-box-wrapper" style={{ width: `${leftPanelWidth}%` }}>
           <label>Input Code</label>
-          <textarea
-            className="text-box"
-            value={inputCode}
-            onChange={(e) => handleInputChange(e.target.value)}
-            placeholder={mode === 'add' ? 'Paste your multi-line code here...' : 'Paste your code with \\n here...'}
-          />
+          {searchTerm && searchResults.input.length > 0 ? (
+            <div className="search-results-container">
+              {searchResults.input.map((match, idx) => (
+                <div key={idx} className="search-result-item">
+                  <span className="result-line-number">Line {match.line}:</span>
+                  <div className="result-text">
+                    {match.highlighted.map((part, i) => (
+                      <span key={i} className={part.highlight ? 'highlight' : ''}>
+                        {part.text}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+              <textarea
+                className="text-box"
+                value={inputCode}
+                onChange={(e) => handleInputChange(e.target.value)}
+                placeholder={mode === 'add' ? 'Paste your multi-line code here...' : 'Paste your code with \\n here...'}
+              />
+          )}
         </div>
         <div className="resize-handle" onMouseDown={handleMouseDown}>
           <div className="resize-line"></div>
         </div>
         <div className="text-box-wrapper" style={{ width: `${100 - leftPanelWidth}%` }}>
           <label>Output Code</label>
-          <textarea
-            className="text-box"
-            value={outputCode}
-            readOnly
-            placeholder="Converted code will appear here..."
-          />
+          {searchTerm && searchResults.output.length > 0 ? (
+            <div className="search-results-container">
+              {searchResults.output.map((match, idx) => (
+                <div key={idx} className="search-result-item">
+                  <span className="result-line-number">Line {match.line}:</span>
+                  <div className="result-text">
+                    {match.highlighted.map((part, i) => (
+                      <span key={i} className={part.highlight ? 'highlight' : ''}>
+                        {part.text}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+              <textarea
+                className="text-box"
+                value={outputCode}
+                readOnly
+                placeholder="Converted code will appear here..."
+              />
+          )}
         </div>
       </div>
     </div>
