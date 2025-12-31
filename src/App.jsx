@@ -30,7 +30,7 @@ function App() {
         .replace(/\r/g, '\\r')
         .replace(/\t/g, '\\t')
         .replace(/\f/g, '\\f')
-        .replace(/\b/g, '\\b')
+
 
       setOutputCode(converted)
     } else if (mode === 'remove') {
@@ -46,7 +46,7 @@ function App() {
           .replace(/\\r/g, '\r')
           .replace(/\\t/g, '\t')
           .replace(/\\f/g, '\f')
-          .replace(/\\b/g, '\b')
+
           .replace(/\\"/g, '"')
           .replace(/\\\\/g, '\\') // Unescape backslashes last
         setOutputCode(converted)
