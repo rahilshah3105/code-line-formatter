@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -44,6 +44,7 @@ import E2EScenarioBuilder from './pages/E2EScenarioBuilder';
 import LogAnalyzer from './pages/LogAnalyzer';
 import GitPrHelper from './pages/GitPrHelper';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import NotFound from './pages/NotFound';
 
 function RouteSeo() {
   const location = useLocation();
@@ -112,7 +113,7 @@ export default function AppRoutes() {
           <Route path="remote-runner" element={<RemoteRunner />} />
           <Route path="js-runner" element={<JSRunner />} />
           <Route path="share" element={<CodeShare />} />
-          <Route path="share/:id" element={<CodeShare />} />
+          <Route path="share/*" element={<CodeShare />} />
           <Route path="regex" element={<RegexTester />} />
           <Route path="hash" element={<HashGenerator />} />
           <Route path="uuid" element={<UuidGenerator />} />
@@ -139,7 +140,7 @@ export default function AppRoutes() {
           <Route path="privacy" element={<PrivacyPolicy />} />
 
           {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/formatter" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </>

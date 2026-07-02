@@ -23,6 +23,8 @@ export default function CodeShare() {
   const { theme } = useTheme();
   const params = useParams();
   const navigate = useNavigate();
+  const rawSharePath = params['*'] || '';
+  const roomIdFromPath = params.id || (rawSharePath ? rawSharePath.split('/').filter(Boolean)[0] : null);
 
   // State Management
   const [tabs, setTabs] = useState([
@@ -118,9 +120,9 @@ export default function CodeShare() {
 
   // Trigger loads on parameter changes
   useEffect(() => {
-    if (params.id) {
-      setRoomId(params.id);
-      loadRoom(params.id);
+    if (roomIdFromPath) {
+      setRoomId(roomIdFromPath);
+      loadRoom(roomIdFromPath);
     } else {
       setRoomId(null);
       setSyncStatus('local');
@@ -135,7 +137,7 @@ export default function CodeShare() {
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
       if (toastHidingTimeoutRef.current) clearTimeout(toastHidingTimeoutRef.current);
     };
-  }, [params.id, loadRoom]);
+  }, [roomIdFromPath, loadRoom]);
 
   // Polling Effect (Runs only in active shared room)
   useEffect(() => {
