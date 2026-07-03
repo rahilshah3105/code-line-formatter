@@ -11,13 +11,13 @@ export default function CodeShrinker() {
 
   const processCode = (value, currentTab, shouldRemoveIndent) => {
     setInputCode(value);
-    
+
     if (currentTab === 'add') {
       let textToConvert = value;
       if (shouldRemoveIndent) {
         textToConvert = textToConvert.replace(/^[ \t]+/gm, ''); // remove leading whitespace
       }
-      
+
       // JSON.stringify natively escapes \n, \t, etc., and encloses with quotes
       let converted = JSON.stringify(textToConvert);
       if (converted.startsWith('"') && converted.endsWith('"')) {
@@ -71,86 +71,36 @@ export default function CodeShrinker() {
         <button type="button" className="primary-button" onClick={copyToClipboard}>Copy Output</button>
       </header>
 
-      <div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-2"
-        style={{
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          width: '100%'
-        }}
-      >
-        <div style={{ display: 'flex', gap: '24px' }}>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-2">
+        <div className="tabs">
           <button 
             type="button"
-            style={{
-              paddingBottom: '8px',
-              paddingLeft: '4px',
-              paddingRight: '4px',
-              fontSize: '0.875rem',
-              fontWeight: tab === 'add' ? '600' : '500',
-              transition: 'all 0.2s',
-              borderBottom: '2px solid',
-              borderColor: tab === 'add' ? 'var(--accent-primary)' : 'transparent',
-              color: tab === 'add' ? 'var(--text-primary)' : 'var(--text-secondary)',
-              cursor: 'pointer',
-              marginBottom: '-9px',
-              background: 'transparent'
-            }}
+            className={`tab-btn ${tab === 'add' ? 'active' : ''}`}
             onClick={() => handleTabChange('add')}
           >
             Add \n (Shrink)
           </button>
           <button 
             type="button"
-            style={{
-              paddingBottom: '8px',
-              paddingLeft: '4px',
-              paddingRight: '4px',
-              fontSize: '0.875rem',
-              fontWeight: tab === 'remove' ? '600' : '500',
-              transition: 'all 0.2s',
-              borderBottom: '2px solid',
-              borderColor: tab === 'remove' ? 'var(--accent-primary)' : 'transparent',
-              color: tab === 'remove' ? 'var(--text-primary)' : 'var(--text-secondary)',
-              cursor: 'pointer',
-              marginBottom: '-9px',
-              background: 'transparent'
-            }}
+            className={`tab-btn ${tab === 'remove' ? 'active' : ''}`}
             onClick={() => handleTabChange('remove')}
           >
             Remove \n (Expand)
           </button>
         </div>
         {tab === 'add' && (
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)', cursor: 'pointer', userSelect: 'none' }}>
-            <div 
-              style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '16px',
-                height: '16px',
-                borderRadius: '4px',
-                border: removeIndentation ? '1.5px solid var(--accent-primary)' : '1.5px solid rgba(255, 255, 255, 0.35)',
-                background: removeIndentation ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.05)',
-                transition: 'all 0.2s',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                if (!removeIndentation) e.currentTarget.style.borderColor = 'var(--accent-primary)';
-              }}
-              onMouseLeave={(e) => {
-                if (!removeIndentation) e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
-              }}
-            >
-              <input 
-                type="checkbox" 
+          <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors shrink-0">
+            <div className="relative flex items-center justify-center w-4 h-4 rounded border border-zinc-500 bg-zinc-800/30 hover:border-[var(--accent-primary)] transition-all">
+              <input
+                type="checkbox"
                 className="sr-only"
                 checked={removeIndentation}
                 onChange={handleCheckboxChange}
               />
               {removeIndentation && (
-                <Check size={12} style={{ color: 'var(--bg-main)', strokeWidth: 3 }} />
+                <div className="absolute inset-0 flex items-center justify-center bg-[var(--accent-primary)] rounded">
+                  <Check size={12} className="text-[var(--bg-main)] stroke-[3]" />
+                </div>
               )}
             </div>
             <span>Remove leading indentation (spaces/tabs)</span>
