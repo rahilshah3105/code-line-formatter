@@ -274,7 +274,7 @@ export default function CodeShare() {
       if (res.ok) {
         setRoomId(newId);
         setSyncStatus('synced');
-        navigate(`/?share=${newId}`, { replace: true });
+        navigate(`/share/${newId}`, { replace: true });
         copyLinkToClipboard(newId);
         showToast('Shared workspace created! Link copied to clipboard.');
       } else {
@@ -291,7 +291,7 @@ export default function CodeShare() {
   const copyLinkToClipboard = (idToUse) => {
     const id = idToUse || roomId;
     if (!id) return;
-    const url = `${window.location.origin}/?share=${id}`;
+    const url = `${window.location.origin}/share/${id}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -299,12 +299,12 @@ export default function CodeShare() {
   };
 
   const resetWorkspace = () => {
-    navigate('/', { replace: true });
+    navigate('/share');
   };
 
   // UI Setup & Helpers
   const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
-  const shareUrl = roomId ? `${window.location.origin}/?share=${roomId}` : '';
+  const shareUrl = roomId ? `${window.location.origin}/share/${roomId}` : '';
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Collaborate with me on this real-time DevMint workspace: ${shareUrl}`)}`;
 
   const resources = [
