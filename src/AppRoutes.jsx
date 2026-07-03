@@ -86,6 +86,17 @@ function RouteSeo() {
   return null;
 }
 
+function RootEntry() {
+  const location = useLocation();
+  const shareId = new URLSearchParams(location.search).get('share');
+
+  if (shareId) {
+    return <CodeShare />;
+  }
+
+  return <Navigate to="/formatter" replace />;
+}
+
 export default function AppRoutes() {
   return (
     <>
@@ -93,7 +104,7 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<Layout />}>
           {/* Redirect root to first tool */}
-          <Route index element={<Navigate to="/formatter" replace />} />
+          <Route index element={<RootEntry />} />
 
           {/* Editors & Formatters */}
           <Route path="formatter" element={<CodeFormatter />} />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { 
   Share2, 
@@ -22,9 +22,11 @@ import './CodeShare.css';
 export default function CodeShare() {
   const { theme } = useTheme();
   const params = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const rawSharePath = params['*'] || '';
-  const roomIdFromPath = params.id || (rawSharePath ? rawSharePath.split('/').filter(Boolean)[0] : null);
+  const shareQueryId = new URLSearchParams(location.search).get('share');
+  const roomIdFromPath = params.id || (rawSharePath ? rawSharePath.split('/').filter(Boolean)[0] : null) || shareQueryId;
 
   // State Management
   const [tabs, setTabs] = useState([
@@ -107,7 +109,7 @@ export default function CodeShare() {
       } else {
         showToast('Room not found. Starting a new workspace.');
         setSyncStatus('local');
-        navigate('/share', { replace: true });
+        navigate('/', { replace: true });
       }
     } catch (err) {
       console.error('loadRoom error:', err);
@@ -272,7 +274,7 @@ export default function CodeShare() {
       if (res.ok) {
         setRoomId(newId);
         setSyncStatus('synced');
-        navigate(`/share/${newId}`, { replace: true });
+        navigate(`/?share=${newId}`, { replace: true });
         copyLinkToClipboard(newId);
         showToast('Shared workspace created! Link copied to clipboard.');
       } else {
@@ -289,7 +291,7 @@ export default function CodeShare() {
   const copyLinkToClipboard = (idToUse) => {
     const id = idToUse || roomId;
     if (!id) return;
-    const url = `${window.location.origin}/share/${id}`;
+    const url = `${window.location.origin}/?share=${id}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -297,12 +299,12 @@ export default function CodeShare() {
   };
 
   const resetWorkspace = () => {
-    navigate('/share');
+    navigate('/', { replace: true });
   };
 
   // UI Setup & Helpers
   const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
-  const shareUrl = roomId ? `${window.location.origin}/share/${roomId}` : '';
+  const shareUrl = roomId ? `${window.location.origin}/?share=${roomId}` : '';
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`Collaborate with me on this real-time DevMint workspace: ${shareUrl}`)}`;
 
   const resources = [
