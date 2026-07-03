@@ -71,34 +71,78 @@ export default function CodeShrinker() {
         <button type="button" className="primary-button" onClick={copyToClipboard}>Copy Output</button>
       </header>
 
-      <div className="flex flex-col sm:flex-row sm:items-stretch sm:items-center gap-4 mb-2 border-b border-[var(--border-light)] w-full pb-[1px]">
-        <div className="flex gap-6">
+      <div 
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-2"
+        style={{
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          width: '100%'
+        }}
+      >
+        <div style={{ display: 'flex', gap: '24px' }}>
           <button 
             type="button"
-            className={`pb-2 px-1 text-sm font-medium transition-all border-b-2 -mb-[1px] cursor-pointer ${
-              tab === 'add' 
-                ? 'border-[var(--accent-primary)] text-[var(--text-primary)] font-semibold' 
-                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-            }`}
+            style={{
+              paddingBottom: '8px',
+              paddingLeft: '4px',
+              paddingRight: '4px',
+              fontSize: '0.875rem',
+              fontWeight: tab === 'add' ? '600' : '500',
+              transition: 'all 0.2s',
+              borderBottom: '2px solid',
+              borderColor: tab === 'add' ? 'var(--accent-primary)' : 'transparent',
+              color: tab === 'add' ? 'var(--text-primary)' : 'var(--text-secondary)',
+              cursor: 'pointer',
+              marginBottom: '-9px',
+              background: 'transparent'
+            }}
             onClick={() => handleTabChange('add')}
           >
             Add \n (Shrink)
           </button>
           <button 
             type="button"
-            className={`pb-2 px-1 text-sm font-medium transition-all border-b-2 -mb-[1px] cursor-pointer ${
-              tab === 'remove' 
-                ? 'border-[var(--accent-primary)] text-[var(--text-primary)] font-semibold' 
-                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-            }`}
+            style={{
+              paddingBottom: '8px',
+              paddingLeft: '4px',
+              paddingRight: '4px',
+              fontSize: '0.875rem',
+              fontWeight: tab === 'remove' ? '600' : '500',
+              transition: 'all 0.2s',
+              borderBottom: '2px solid',
+              borderColor: tab === 'remove' ? 'var(--accent-primary)' : 'transparent',
+              color: tab === 'remove' ? 'var(--text-primary)' : 'var(--text-secondary)',
+              cursor: 'pointer',
+              marginBottom: '-9px',
+              background: 'transparent'
+            }}
             onClick={() => handleTabChange('remove')}
           >
             Remove \n (Expand)
           </button>
         </div>
         {tab === 'add' && (
-          <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors shrink-0">
-            <div className="relative flex items-center justify-center w-4 h-4 rounded border border-[var(--border-light)] bg-white/5 hover:border-[var(--accent-primary)] transition-all">
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)', cursor: 'pointer', userSelect: 'none' }}>
+            <div 
+              style={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '16px',
+                height: '16px',
+                borderRadius: '4px',
+                border: removeIndentation ? '1.5px solid var(--accent-primary)' : '1.5px solid rgba(255, 255, 255, 0.35)',
+                background: removeIndentation ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.05)',
+                transition: 'all 0.2s',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                if (!removeIndentation) e.currentTarget.style.borderColor = 'var(--accent-primary)';
+              }}
+              onMouseLeave={(e) => {
+                if (!removeIndentation) e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
+              }}
+            >
               <input 
                 type="checkbox" 
                 className="sr-only"
@@ -106,9 +150,7 @@ export default function CodeShrinker() {
                 onChange={handleCheckboxChange}
               />
               {removeIndentation && (
-                <div className="absolute inset-0 flex items-center justify-center bg-[var(--accent-primary)] rounded">
-                  <Check size={12} className="text-[var(--bg-main)] stroke-[3]" />
-                </div>
+                <Check size={12} style={{ color: 'var(--bg-main)', strokeWidth: 3 }} />
               )}
             </div>
             <span>Remove leading indentation (spaces/tabs)</span>
