@@ -77,9 +77,9 @@ function explainRegex(pattern, flags, matchCount) {
     { re: /^\(\?<=/, label: '(?<=…)', desc: 'Positive lookbehind — asserts that what precedes matches the inner pattern.' },
     { re: /^\(\?<!/, label: '(?<!…)', desc: 'Negative lookbehind — asserts that what precedes does NOT match.' },
     { re: /^\(/, label: '(…)', desc: 'Capturing group — groups expressions and saves the match.' },
-    { re: /^\{\d+,\d+\}/, label: '{n,m}', desc: (m) => { const [n,x]=m.slice(1,-1).split(','); return `Quantifier — match between ${n} and ${x} of the preceding token.`; } },
-    { re: /^\{\d+,\}/, label: '{n,}', desc: (m) => `Quantifier — match ${m.slice(1,-1).split(',')[0]} or MORE of the preceding token.` },
-    { re: /^\{\d+\}/, label: '{n}', desc: (m) => `Quantifier — match EXACTLY ${m.slice(1,-1)} of the preceding token.` },
+    { re: /^\{\d+,\d+\}/, label: '{n,m}', desc: (m) => { const [n, x] = m.slice(1, -1).split(','); return `Quantifier — match between ${n} and ${x} of the preceding token.`; } },
+    { re: /^\{\d+,\}/, label: '{n,}', desc: (m) => `Quantifier — match ${m.slice(1, -1).split(',')[0]} or MORE of the preceding token.` },
+    { re: /^\{\d+\}/, label: '{n}', desc: (m) => `Quantifier — match EXACTLY ${m.slice(1, -1)} of the preceding token.` },
     { re: /^\+\?/, label: '+?', desc: 'One or more (lazy) — matches as FEW repetitions as possible.' },
     { re: /^\*\?/, label: '*?', desc: 'Zero or more (lazy) — matches as FEW repetitions as possible.' },
     { re: /^\?\?/, label: '??', desc: 'Zero or one (lazy) — prefers zero.' },
@@ -184,7 +184,7 @@ export default function RegexTester() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Regex Tester</h2>

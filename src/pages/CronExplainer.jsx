@@ -4,8 +4,8 @@ import ResourceLinks from '../components/ResourceLinks';
 import './ToolPage.css';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 function fieldDesc(val, unit, names = null) {
   if (val === '*') return `every ${unit}`;
@@ -35,11 +35,11 @@ function explainCron(expr) {
 
   const [min, hour, dom, month, dow] = parts;
   const desc = {
-    minute:  fieldDesc(min,   'minute'),
-    hour:    fieldDesc(hour,  'hour'),
-    dom:     fieldDesc(dom,   'day of month'),
-    month:   fieldDesc(month, 'month', MONTHS),
-    dow:     fieldDesc(dow,   'weekday', DAYS),
+    minute: fieldDesc(min, 'minute'),
+    hour: fieldDesc(hour, 'hour'),
+    dom: fieldDesc(dom, 'day of month'),
+    month: fieldDesc(month, 'month', MONTHS),
+    dow: fieldDesc(dow, 'weekday', DAYS),
   };
 
   // Simple English sentence
@@ -109,14 +109,14 @@ function getNextRuns(expr, count = 5) {
 }
 
 const PRESETS = [
-  { label: 'Every minute',       value: '* * * * *' },
-  { label: 'Every hour',         value: '0 * * * *' },
-  { label: 'Daily at midnight',  value: '0 0 * * *' },
-  { label: 'Daily at 9 AM',      value: '0 9 * * *' },
-  { label: 'Every Sunday',       value: '0 0 * * 0' },
+  { label: 'Every minute', value: '* * * * *' },
+  { label: 'Every hour', value: '0 * * * *' },
+  { label: 'Daily at midnight', value: '0 0 * * *' },
+  { label: 'Daily at 9 AM', value: '0 9 * * *' },
+  { label: 'Every Sunday', value: '0 0 * * 0' },
   { label: 'Every weekday 9 AM', value: '0 9 * * 1-5' },
   { label: '1st of every month', value: '0 0 1 * *' },
-  { label: 'Every 15 minutes',   value: '*/15 * * * *' },
+  { label: 'Every 15 minutes', value: '*/15 * * * *' },
 ];
 
 const resources = [
@@ -149,7 +149,7 @@ export default function CronExplainer() {
   };
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Cron Explainer</h2>
@@ -222,7 +222,7 @@ export default function CronExplainer() {
               <tbody>
                 {Object.entries(result.desc).map(([field, text]) => (
                   <tr key={field} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                    <td style={{ padding: '6px 0', color: 'var(--text-muted)', textTransform: 'capitalize', paddingRight: 20, fontWeight: 600 }}>{field.replace('dow','weekday').replace('dom','day of month')}</td>
+                    <td style={{ padding: '6px 0', color: 'var(--text-muted)', textTransform: 'capitalize', paddingRight: 20, fontWeight: 600 }}>{field.replace('dow', 'weekday').replace('dom', 'day of month')}</td>
                     <td style={{ padding: '6px 0', color: 'var(--text-secondary)' }}>{text}</td>
                   </tr>
                 ))}

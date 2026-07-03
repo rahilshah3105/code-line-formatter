@@ -379,9 +379,9 @@ export default function JsonToolkit() {
       searchMatches.forEach((start, index) => {
         const end = start + searchTerm.length;
         const className =
-            index === activeMatchIndex
-              ? 'json-match-highlight json-match-highlight-active'
-              : 'json-match-highlight';
+          index === activeMatchIndex
+            ? 'json-match-highlight json-match-highlight-active'
+            : 'json-match-highlight';
 
         html += escapeHtml(input.slice(cursor, start));
         html += `<mark class="${className}">${escapeHtml(input.slice(start, end))}</mark>`;
@@ -407,7 +407,7 @@ export default function JsonToolkit() {
   }, [activeMatchEnd, activeMatchStart, hasActiveMatch]);
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>JSON Toolkit</h2>

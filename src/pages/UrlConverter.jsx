@@ -43,7 +43,7 @@ export default function UrlConverter() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>URL Encoder / Decoder</h2>

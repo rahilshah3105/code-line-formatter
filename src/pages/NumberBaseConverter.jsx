@@ -4,10 +4,10 @@ import ResourceLinks from '../components/ResourceLinks';
 import './ToolPage.css';
 
 const BASES = [
-  { id: 'dec', label: 'Decimal',  base: 10, prefix: '', placeholder: '255' },
-  { id: 'hex', label: 'Hex',      base: 16, prefix: '0x', placeholder: 'FF' },
-  { id: 'oct', label: 'Octal',    base: 8,  prefix: '0o', placeholder: '377' },
-  { id: 'bin', label: 'Binary',   base: 2,  prefix: '0b', placeholder: '11111111' },
+  { id: 'dec', label: 'Decimal', base: 10, prefix: '', placeholder: '255' },
+  { id: 'hex', label: 'Hex', base: 16, prefix: '0x', placeholder: 'FF' },
+  { id: 'oct', label: 'Octal', base: 8, prefix: '0o', placeholder: '377' },
+  { id: 'bin', label: 'Binary', base: 2, prefix: '0b', placeholder: '11111111' },
 ];
 
 const examples = [
@@ -74,7 +74,7 @@ export default function NumberBaseConverter() {
   };
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Number Base Converter</h2>

@@ -126,7 +126,7 @@ export default function ImprovePrompts() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Improve Prompts</h2>

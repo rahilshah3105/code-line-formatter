@@ -78,7 +78,7 @@ const transforms = [
   },
   {
     id: 'count-chars', label: 'Count Characters', group: 'Stats',
-    fn: s => `Characters (with spaces): ${s.length}\nCharacters (no spaces): ${s.replace(/\s/g,'').length}\nWords: ${s.trim() ? s.trim().split(/\s+/).length : 0}\nLines: ${s.split('\n').length}\nSentences: ${(s.match(/[.!?]+/g) || []).length}`,
+    fn: s => `Characters (with spaces): ${s.length}\nCharacters (no spaces): ${s.replace(/\s/g, '').length}\nWords: ${s.trim() ? s.trim().split(/\s+/).length : 0}\nLines: ${s.split('\n').length}\nSentences: ${(s.match(/[.!?]+/g) || []).length}`,
   },
 ];
 
@@ -132,7 +132,7 @@ export default function StringUtils() {
   };
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>String Utils</h2>
@@ -181,7 +181,7 @@ export default function StringUtils() {
                     cursor: input ? 'pointer' : 'not-allowed',
                     opacity: input ? 1 : 0.5,
                     transition: 'all 0.18s',
-                    fontFamily: ['camelcase','pascalcase','snakecase','kebabcase','constantcase'].includes(t.id) ? 'var(--font-mono)' : 'inherit',
+                    fontFamily: ['camelcase', 'pascalcase', 'snakecase', 'kebabcase', 'constantcase'].includes(t.id) ? 'var(--font-mono)' : 'inherit',
                   }}
                 >
                   {t.label}

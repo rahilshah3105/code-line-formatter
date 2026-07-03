@@ -16,14 +16,14 @@ export default function MultiLangEditor() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Multi-Language Syntax Highlighter</h2>
           <p>Read and write code with full syntax highlighting for 15+ programming languages.</p>
         </div>
         <div className="flex gap-2 relative z-20">
-          <CustomSelect 
+          <CustomSelect
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
             options={LANGUAGES.map(lang => ({ value: lang.id, label: lang.name }))}

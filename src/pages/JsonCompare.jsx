@@ -6,11 +6,11 @@ import './ToolPage.css';
 
 // ─── Deep diff engine ────────────────────────────────────────────────────────
 
-const ADDED   = 'added';
+const ADDED = 'added';
 const REMOVED = 'removed';
 const CHANGED = 'changed';
-const EQUAL   = 'equal';
-const NESTED  = 'nested';
+const EQUAL = 'equal';
+const NESTED = 'nested';
 
 function deepDiff(left, right, path = '') {
   const results = [];
@@ -85,11 +85,11 @@ function countChanges(diffs) {
 // ─── Rendering diff tree ─────────────────────────────────────────────────────
 
 const TYPE_COLORS = {
-  [ADDED]:   { bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.3)', text: '#10b981', badge: 'ADDED',   icon: '+' },
-  [REMOVED]: { bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.3)',  text: '#ef4444', badge: 'REMOVED', icon: '-' },
+  [ADDED]: { bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.3)', text: '#10b981', badge: 'ADDED', icon: '+' },
+  [REMOVED]: { bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.3)', text: '#ef4444', badge: 'REMOVED', icon: '-' },
   [CHANGED]: { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.3)', text: '#f59e0b', badge: 'CHANGED', icon: '~' },
-  [EQUAL]:   { bg: 'transparent',           border: 'transparent',          text: 'var(--text-muted)', badge: null, icon: '=' },
-  [NESTED]:  { bg: 'transparent',           border: 'transparent',          text: 'var(--text-secondary)', badge: null, icon: '▸' },
+  [EQUAL]: { bg: 'transparent', border: 'transparent', text: 'var(--text-muted)', badge: null, icon: '=' },
+  [NESTED]: { bg: 'transparent', border: 'transparent', text: 'var(--text-secondary)', badge: null, icon: '▸' },
 };
 
 function valuePreview(v) {
@@ -219,19 +219,19 @@ const resources = [
 ];
 
 export default function JsonCompare() {
-  const [leftInput, setLeftInput]     = useLocalStorage('json_compare_left', SAMPLE_LEFT);
-  const [rightInput, setRightInput]   = useLocalStorage('json_compare_right', SAMPLE_RIGHT);
-  const [leftError, setLeftError]     = useState('');
-  const [rightError, setRightError]   = useState('');
-  const [showEqual, setShowEqual]     = useLocalStorage('json_compare_show_equal', false);
-  const [view, setView]               = useLocalStorage('json_compare_view', 'tree'); // 'tree' | 'sidebyside'
-  const [diffDone, setDiffDone]       = useState(true);
+  const [leftInput, setLeftInput] = useLocalStorage('json_compare_left', SAMPLE_LEFT);
+  const [rightInput, setRightInput] = useLocalStorage('json_compare_right', SAMPLE_RIGHT);
+  const [leftError, setLeftError] = useState('');
+  const [rightError, setRightError] = useState('');
+  const [showEqual, setShowEqual] = useLocalStorage('json_compare_show_equal', false);
+  const [view, setView] = useLocalStorage('json_compare_view', 'tree'); // 'tree' | 'sidebyside'
+  const [diffDone, setDiffDone] = useState(true);
   const [copiedPanel, setCopiedPanel] = useState(null);
 
   const { diffs, stats } = useMemo(() => {
     let leftParsed = null, rightParsed = null;
     let le = '', re = '';
-    try { leftParsed  = JSON.parse(leftInput);  } catch (e) { le = e.message; }
+    try { leftParsed = JSON.parse(leftInput); } catch (e) { le = e.message; }
     try { rightParsed = JSON.parse(rightInput); } catch (e) { re = e.message; }
     setLeftError(le);
     setRightError(re);
@@ -270,14 +270,14 @@ export default function JsonCompare() {
     const rightLines = rightInput.split('\n');
     const len = Math.max(leftLines.length, rightLines.length);
     return Array.from({ length: len }, (_, i) => ({
-      left:  leftLines[i]  ?? '',
+      left: leftLines[i] ?? '',
       right: rightLines[i] ?? '',
       diff: (leftLines[i] ?? '') !== (rightLines[i] ?? ''),
     }));
   }, [leftInput, rightInput]);
 
   return (
-    <div className="tool-page h-full flex flex-col" style={{ gap: 14 }}>
+    <div className="tool-page h-full flex flex-col overflow-y-auto" style={{ gap: 14 }}>
       <header className="tool-header">
         <div>
           <h2>JSON Compare</h2>
@@ -329,7 +329,7 @@ export default function JsonCompare() {
             <div style={{ padding: '8px 14px', background: 'rgba(0,0,0,0.15)', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between', width: '100%' }}>
                 <span style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color }}>{label}</span>
-                <button 
+                <button
                   onClick={() => copyPanel(value, label)}
                   style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, padding: '2px 6px', borderRadius: 4 }}
                   className="hover:bg-[rgba(255,255,255,0.05)] transition-colors"

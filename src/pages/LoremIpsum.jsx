@@ -37,7 +37,7 @@ export default function LoremIpsum() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Lorem Ipsum Generator</h2>
@@ -45,11 +45,11 @@ export default function LoremIpsum() {
         </div>
         <div className="flex gap-2 items-center">
           <label className="text-sm text-[var(--text-secondary)]">Paragraphs:</label>
-          <input 
-            type="number" 
-            min="1" 
-            max="50" 
-            value={paragraphs} 
+          <input
+            type="number"
+            min="1"
+            max="50"
+            value={paragraphs}
             onChange={(e) => setParagraphs(parseInt(e.target.value) || 1)}
             className="tool-number-input"
           />

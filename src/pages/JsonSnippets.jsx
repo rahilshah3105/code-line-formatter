@@ -73,7 +73,7 @@ const SNIPPETS = [
     description: 'Application configuration JSON with env, feature flags, and API settings.',
     data: {
       app: { name: 'MyApp', version: '2.4.1', env: 'production', debug: false, timezone: 'UTC' },
-      server: { host: '0.0.0.0', port: 8080, cors: { enabled: true, origins: ['https://myapp.com', 'https://app.myapp.com'], methods: ['GET','POST','PUT','DELETE','PATCH'] } },
+      server: { host: '0.0.0.0', port: 8080, cors: { enabled: true, origins: ['https://myapp.com', 'https://app.myapp.com'], methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] } },
       database: { driver: 'postgres', host: 'db.myapp.com', port: 5432, name: 'myapp_prod', pool: { min: 2, max: 20 } },
       features: { darkMode: true, betaFeatures: false, maintenanceMode: false, analyticsEnabled: true },
       rateLimiting: { enabled: true, windowMs: 60000, maxRequests: 100 },
@@ -377,7 +377,7 @@ export default function JsonSnippets() {
   );
 
   return (
-    <div className="tool-page h-full flex flex-col" style={{ gap: 16 }}>
+    <div className="tool-page h-full flex flex-col overflow-y-auto" style={{ gap: 16 }}>
       <header className="tool-header">
         <div>
           <h2>JSON Snippets</h2>

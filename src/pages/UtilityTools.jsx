@@ -4,30 +4,30 @@ import ResourceLinks from '../components/ResourceLinks';
 import './ToolPage.css';
 
 const TOOLS = [
-  { id: 'format-json',    label: 'Format JSON',    group: 'JSON' },
-  { id: 'minify-json',    label: 'Minify JSON',    group: 'JSON' },
-  { id: 'base64-encode',  label: 'Base64 Encode',  group: 'Encoding' },
-  { id: 'base64-decode',  label: 'Base64 Decode',  group: 'Encoding' },
-  { id: 'hex-encode',     label: 'Hex Encode',     group: 'Encoding' },
-  { id: 'hex-decode',     label: 'Hex Decode',     group: 'Encoding' },
-  { id: 'binary-encode',  label: 'Binary Encode',  group: 'Encoding' },
-  { id: 'binary-decode',  label: 'Binary Decode',  group: 'Encoding' },
-  { id: 'html-escape',    label: 'HTML Escape',    group: 'HTML' },
-  { id: 'html-unescape',  label: 'HTML Unescape',  group: 'HTML' },
-  { id: 'generate-uuid',  label: 'Generate UUID',  group: 'Generate' },
-  { id: 'generate-hash',  label: 'Generate Hash',  group: 'Generate' },
+  { id: 'format-json', label: 'Format JSON', group: 'JSON' },
+  { id: 'minify-json', label: 'Minify JSON', group: 'JSON' },
+  { id: 'base64-encode', label: 'Base64 Encode', group: 'Encoding' },
+  { id: 'base64-decode', label: 'Base64 Decode', group: 'Encoding' },
+  { id: 'hex-encode', label: 'Hex Encode', group: 'Encoding' },
+  { id: 'hex-decode', label: 'Hex Decode', group: 'Encoding' },
+  { id: 'binary-encode', label: 'Binary Encode', group: 'Encoding' },
+  { id: 'binary-decode', label: 'Binary Decode', group: 'Encoding' },
+  { id: 'html-escape', label: 'HTML Escape', group: 'HTML' },
+  { id: 'html-unescape', label: 'HTML Unescape', group: 'HTML' },
+  { id: 'generate-uuid', label: 'Generate UUID', group: 'Generate' },
+  { id: 'generate-hash', label: 'Generate Hash', group: 'Generate' },
 ];
 
 const TOOL_DESCRIPTIONS = {
-  'format-json':   'Pretty-print JSON with 2-space indentation.',
-  'minify-json':   'Compact JSON by removing all whitespace.',
+  'format-json': 'Pretty-print JSON with 2-space indentation.',
+  'minify-json': 'Compact JSON by removing all whitespace.',
   'base64-encode': 'Encode plain text to Base64.',
   'base64-decode': 'Decode a Base64 string back to plain text.',
-  'hex-encode':    'Convert text to hexadecimal byte representation.',
-  'hex-decode':    'Convert hex bytes back to readable text.',
+  'hex-encode': 'Convert text to hexadecimal byte representation.',
+  'hex-decode': 'Convert hex bytes back to readable text.',
   'binary-encode': 'Convert text to binary (0s and 1s).',
   'binary-decode': 'Convert binary string back to readable text.',
-  'html-escape':   'Escape HTML special characters (<, >, &, ", \').',
+  'html-escape': 'Escape HTML special characters (<, >, &, ", \').',
   'html-unescape': 'Convert HTML entities back to raw characters.',
   'generate-uuid': 'Generate a random RFC 4122 UUID v4.',
   'generate-hash': 'Compute SHA-256 hash of the input string.',
@@ -89,7 +89,7 @@ function processInput(toolId, input) {
       default:
         return '';
     }
-  } catch(e) {
+  } catch (e) {
     return `Error: ${e.message}`;
   }
 }
@@ -174,7 +174,7 @@ export default function UtilityTools() {
   const isUuid = selectedTool === 'generate-uuid';
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Utility Tools</h2>
@@ -214,10 +214,10 @@ export default function UtilityTools() {
 
       {/* Description */}
       <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', padding: '6px 12px', borderRadius: 8, background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span>📌 <strong style={{color:'var(--text-primary)'}}>{activeTool?.label}</strong> — {TOOL_DESCRIPTIONS[selectedTool]}</span>
+        <span>📌 <strong style={{ color: 'var(--text-primary)' }}>{activeTool?.label}</strong> — {TOOL_DESCRIPTIONS[selectedTool]}</span>
         <div style={{ display: 'flex', gap: 8 }}>
           {needsButton && (
-            <button className="secondary-button" onClick={handleRun} style={{padding:'5px 14px',fontSize:'0.82rem'}}>
+            <button className="secondary-button" onClick={handleRun} style={{ padding: '5px 14px', fontSize: '0.82rem' }}>
               {isUuid ? 'Generate UUID' : 'Compute Hash'}
             </button>
           )}
@@ -225,7 +225,7 @@ export default function UtilityTools() {
             className="primary-button"
             onClick={handleCopy}
             disabled={!output}
-            style={{padding:'5px 14px',fontSize:'0.82rem'}}
+            style={{ padding: '5px 14px', fontSize: '0.82rem' }}
           >
             {copied ? '✓ Copied!' : 'Copy Output'}
           </button>
@@ -255,7 +255,7 @@ export default function UtilityTools() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 glass-panel rounded-xl overflow-hidden flex flex-col items-stretch" style={{minHeight:200}}>
+        <div className="flex-1 glass-panel rounded-xl overflow-hidden flex flex-col items-stretch" style={{ minHeight: 200 }}>
           <div className="panel-header">Generated UUID</div>
           <div style={{ padding: 24, fontFamily: 'var(--font-mono)', fontSize: '1.1rem', color: 'var(--accent-primary)', letterSpacing: '0.04em' }}>
             {output || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '0.9rem' }}>Click "Generate UUID" above</span>}

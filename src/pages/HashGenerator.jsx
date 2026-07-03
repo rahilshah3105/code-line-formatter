@@ -20,7 +20,7 @@ export default function HashGenerator() {
 
     const generateHashes = async () => {
       const msgUint8 = new TextEncoder().encode(input);
-      
+
       const hashTypes = [
         { name: 'sha1', alg: 'SHA-1' },
         { name: 'sha256', alg: 'SHA-256' },
@@ -29,7 +29,7 @@ export default function HashGenerator() {
       ];
 
       const newHashes = { ...hashes };
-      
+
       for (const ht of hashTypes) {
         try {
           const hashBuffer = await crypto.subtle.digest(ht.alg, msgUint8);
@@ -45,7 +45,7 @@ export default function HashGenerator() {
     };
 
     generateHashes();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input]);
 
   const copyToClipboard = (text) => {
@@ -58,7 +58,7 @@ export default function HashGenerator() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Hash / Crypto Generator</h2>
@@ -76,7 +76,7 @@ export default function HashGenerator() {
             placeholder="Type your string here to hash..."
           />
         </div>
-        
+
         <div className="flex-[2] flex flex-col gap-4">
           {[
             { label: 'SHA-256 (Standard secure)', value: hashes.sha256, color: 'text-green-400' },
@@ -87,7 +87,7 @@ export default function HashGenerator() {
             <div key={idx} className="glass-panel flex-1 rounded-xl overflow-hidden flex flex-col items-stretch">
               <div className="panel-header flex justify-between items-center py-2 px-4 shadow">
                 <span className="text-[var(--text-muted)]">{hash.label}</span>
-                <button 
+                <button
                   className="text-xs bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] px-2 py-1 rounded transition-colors"
                   onClick={() => copyToClipboard(hash.value)}
                 >

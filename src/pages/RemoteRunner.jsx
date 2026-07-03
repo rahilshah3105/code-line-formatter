@@ -59,7 +59,7 @@ export default function RemoteRunner() {
   const [errorMsg, setErrorMsg] = useState('');
   const [copied, setCopied] = useState(false);
   const editorRef = useRef(null);
-  const executeCodeRef = useRef(() => {});
+  const executeCodeRef = useRef(() => { });
 
   const handleLanguageChange = (e) => {
     const langId = e.target.value;
@@ -151,7 +151,7 @@ export default function RemoteRunner() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Multi-Language Remote Runner</h2>

@@ -45,7 +45,7 @@ export default function Base64Converter() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Base64 Encoder / Decoder</h2>

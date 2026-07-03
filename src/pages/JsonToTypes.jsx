@@ -14,7 +14,7 @@ export default function JsonToTypes() {
         return;
       }
       const obj = JSON.parse(jsonStr);
-      
+
       const interfaces = {};
 
       const inferType = (value, currentName) => {
@@ -65,15 +65,15 @@ export default function JsonToTypes() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>JSON to TypeScript Types</h2>
           <p>Paste your JSON payload and instantly generate TypeScript interfaces.</p>
         </div>
         <div className="flex gap-2 items-center">
-          <input 
-            type="text" 
+          <input
+            type="text"
             className="bg-[rgba(255,255,255,0.05)] text-[var(--text-primary)] border border-[rgba(255,255,255,0.1)] rounded px-3 py-2 text-sm outline-none"
             placeholder="Root Interface Name"
             value={interfaceName}

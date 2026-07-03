@@ -20,7 +20,7 @@ const hslToRgb = (h, s, l) => {
 
 const hsvToRgb = (h, s, v) => {
   s /= 100; v /= 100;
-  const f = (n, k=(n+h/60)%6) => v - v*s*Math.max(0, Math.min(k, 4-k, 1));
+  const f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(0, Math.min(k, 4 - k, 1));
   return { r: Math.round(255 * f(5)), g: Math.round(255 * f(3)), b: Math.round(255 * f(1)) };
 };
 
@@ -124,46 +124,46 @@ export default function ColorConverter() {
     const val = e.target.value;
     setter(val);
     try {
-        if (type === 'hex' || type === 'hex8') {
-             setHex(val);
-        } else if (type === 'rgb' || type === 'rgba') {
-            const match = val.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/i);
-            if (match) {
-                const r = parseInt(match[1]); const g = parseInt(match[2]); const b = parseInt(match[3]);
-                const a = match[4] ? parseFloat(match[4]) : 1;
-                if (r<=255 && g<=255 && b<=255 && a<=1) setHex(rgbaToHex(r, g, b, a));
-            }
-        } else if (type === 'hsl' || type === 'hsla') {
-            const match = val.match(/hsla?\(\s*(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?(?:\s*,\s*([\d.]+))?\s*\)/i);
-            if (match) {
-                let h = parseInt(match[1]); let s = parseInt(match[2]); let l = parseInt(match[3]);
-                let a = match[4] ? parseFloat(match[4]) : 1;
-                if (h<=360 && s<=100 && l<=100 && a<=1) {
-                    const {r,g,b} = hslToRgb(h, s, l);
-                    setHex(rgbaToHex(r,g,b,a));
-                }
-            }
-        } else if (type === 'hsv') {
-            const match = val.match(/hsv\(\s*(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)/i);
-            if (match) {
-                let h = parseInt(match[1]); let s = parseInt(match[2]); let v = parseInt(match[3]);
-                if (h<=360 && s<=100 && v<=100) {
-                    const {r,g,b} = hsvToRgb(h, s, v);
-                    setHex(rgbaToHex(r,g,b,1));
-                }
-            }
-        } else if (type === 'cmyk') {
-            const match = val.match(/cmyk\(\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)/i);
-            if (match) {
-                let c = parseInt(match[1]) / 100; let m = parseInt(match[2]) / 100; 
-                let y = parseInt(match[3]) / 100; let k = parseInt(match[4]) / 100;
-                if (c<=1 && m<=1 && y<=1 && k<=1) {
-                    const {r,g,b} = cmykToRgb(c,m,y,k);
-                    setHex(rgbaToHex(r,g,b,1));
-                }
-            }
+      if (type === 'hex' || type === 'hex8') {
+        setHex(val);
+      } else if (type === 'rgb' || type === 'rgba') {
+        const match = val.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/i);
+        if (match) {
+          const r = parseInt(match[1]); const g = parseInt(match[2]); const b = parseInt(match[3]);
+          const a = match[4] ? parseFloat(match[4]) : 1;
+          if (r <= 255 && g <= 255 && b <= 255 && a <= 1) setHex(rgbaToHex(r, g, b, a));
         }
-    } catch (err) {}
+      } else if (type === 'hsl' || type === 'hsla') {
+        const match = val.match(/hsla?\(\s*(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?(?:\s*,\s*([\d.]+))?\s*\)/i);
+        if (match) {
+          let h = parseInt(match[1]); let s = parseInt(match[2]); let l = parseInt(match[3]);
+          let a = match[4] ? parseFloat(match[4]) : 1;
+          if (h <= 360 && s <= 100 && l <= 100 && a <= 1) {
+            const { r, g, b } = hslToRgb(h, s, l);
+            setHex(rgbaToHex(r, g, b, a));
+          }
+        }
+      } else if (type === 'hsv') {
+        const match = val.match(/hsv\(\s*(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)/i);
+        if (match) {
+          let h = parseInt(match[1]); let s = parseInt(match[2]); let v = parseInt(match[3]);
+          if (h <= 360 && s <= 100 && v <= 100) {
+            const { r, g, b } = hsvToRgb(h, s, v);
+            setHex(rgbaToHex(r, g, b, 1));
+          }
+        }
+      } else if (type === 'cmyk') {
+        const match = val.match(/cmyk\(\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)/i);
+        if (match) {
+          let c = parseInt(match[1]) / 100; let m = parseInt(match[2]) / 100;
+          let y = parseInt(match[3]) / 100; let k = parseInt(match[4]) / 100;
+          if (c <= 1 && m <= 1 && y <= 1 && k <= 1) {
+            const { r, g, b } = cmykToRgb(c, m, y, k);
+            setHex(rgbaToHex(r, g, b, 1));
+          }
+        }
+      }
+    } catch (err) { }
   };
 
   const copyToClipboard = (text, label) => {
@@ -179,7 +179,7 @@ export default function ColorConverter() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Color Code Converter</h2>

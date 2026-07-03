@@ -3,7 +3,7 @@ import './ToolPage.css';
 
 export default function PrivacyPolicy() {
   return (
-    <div className="tool-page h-full flex flex-col" style={{ paddingBottom: '40px' }}>
+    <div className="tool-page h-full flex flex-col overflow-y-auto" style={{ paddingBottom: '40px' }}>
       <header className="tool-header">
         <div>
           <h2>Privacy Policy</h2>
@@ -37,7 +37,7 @@ export default function PrivacyPolicy() {
 
         {/* Details Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
-          
+
           {/* AdSense & Cookies Section */}
           <div className="glass-panel rounded-xl p-6">
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
@@ -71,8 +71,8 @@ export default function PrivacyPolicy() {
             </div>
             <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <p>
-                <strong>Local Processing:</strong> Unlike typical web services, DevMint is a client-side developer toolbox. 
-                Any code, JSON payloads, diffs, or text snippets you format or process in our tools are executed strictly inside your local browser. 
+                <strong>Local Processing:</strong> Unlike typical web services, DevMint is a client-side developer toolbox.
+                Any code, JSON payloads, diffs, or text snippets you format or process in our tools are executed strictly inside your local browser.
                 We do not send your workspace data to our servers.
               </p>
               <p>

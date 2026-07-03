@@ -48,7 +48,7 @@ const APPS = [
 
 export default function DeveloperApps() {
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header border-b border-[var(--border-light)] pb-6 mb-6">
         <div>
           <h2>Recommended Developer Apps</h2>
@@ -82,11 +82,11 @@ export default function DeveloperApps() {
                 </div>
                 <ExternalLink size={16} className="developer-app-card-icon" />
               </div>
-              
+
               <p className="developer-app-card-description">
                 {app.description}
               </p>
-              
+
             </a>
           ))}
         </div>

@@ -26,7 +26,7 @@ export default function UuidGenerator() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>UUID / GUID Generator</h2>
@@ -34,11 +34,11 @@ export default function UuidGenerator() {
         </div>
         <div className="flex gap-2 items-center">
           <label className="text-sm text-[var(--text-secondary)]">Count:</label>
-          <input 
-            type="number" 
-            min="1" 
-            max="1000" 
-            value={count} 
+          <input
+            type="number"
+            min="1"
+            max="1000"
+            value={count}
             onChange={(e) => setCount(parseInt(e.target.value) || 1)}
             className="tool-number-input"
           />

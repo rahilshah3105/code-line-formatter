@@ -12,7 +12,7 @@ export default function JwtDecoder() {
   const decodeJwt = (val) => {
     setToken(val);
     setError('');
-    
+
     if (!val || val.trim() === '') {
       setHeader('');
       setPayload('');
@@ -55,7 +55,7 @@ export default function JwtDecoder() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>JWT Decoder</h2>
@@ -74,7 +74,7 @@ export default function JwtDecoder() {
           />
           {error && <div className="p-3 text-red-400 text-sm bg-red-900/20">{error}</div>}
         </div>
-        
+
         <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
           <div className="glass-panel flex-1 flex flex-col rounded-xl overflow-hidden">
             <div className="panel-header text-[var(--accent-error)] border-b border-[rgba(239,68,68,0.2)]">Header (Algorithm & Type)</div>

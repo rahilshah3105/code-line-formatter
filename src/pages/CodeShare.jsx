@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { 
-  Share2, 
-  Copy, 
-  Check, 
-  Plus, 
-  X, 
-  RefreshCw, 
-  Send, 
+import {
+  Share2,
+  Copy,
+  Check,
+  Plus,
+  X,
+  RefreshCw,
+  Send,
   Info,
   FileText
 } from 'lucide-react';
@@ -71,10 +71,10 @@ export default function CodeShare() {
   const showToast = (message) => {
     if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     if (toastHidingTimeoutRef.current) clearTimeout(toastHidingTimeoutRef.current);
-    
+
     setToast(message);
     setToastHiding(false);
-    
+
     toastTimeoutRef.current = setTimeout(() => {
       setToastHiding(true);
       toastHidingTimeoutRef.current = setTimeout(() => {
@@ -219,10 +219,10 @@ export default function CodeShare() {
   const deleteTab = (tabId, e) => {
     e.stopPropagation();
     if (tabs.length === 1) return;
-    
+
     const nextTabs = tabs.filter(t => t.id !== tabId);
     setTabs(nextTabs);
-    
+
     let nextActiveId = activeTabId;
     if (activeTabId === tabId) {
       nextActiveId = nextTabs[nextTabs.length - 1].id;
@@ -314,7 +314,7 @@ export default function CodeShare() {
 
   if (isLoading) {
     return (
-      <div className="tool-page h-full flex flex-col justify-center items-center py-20">
+      <div className="tool-page h-full flex flex-col overflow-y-auto justify-center items-center py-20">
         <RefreshCw className="animate-spin text-[var(--accent-primary)] mb-4" size={48} />
         <p className="text-[var(--text-secondary)] font-medium">Retrieving shared workspace...</p>
       </div>
@@ -322,7 +322,7 @@ export default function CodeShare() {
   }
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       {/* Toast Alert */}
       {toast && (
         <div className={`toast-notification ${toastHiding ? 'hiding' : ''}`}>
@@ -364,8 +364,8 @@ export default function CodeShare() {
 
           {roomId && (
             <div className="relative" ref={shareMenuRef}>
-              <button 
-                className="secondary-button flex items-center gap-2" 
+              <button
+                className="secondary-button flex items-center gap-2"
                 onClick={() => setShareMenuOpen(!shareMenuOpen)}
                 title="Share workspace"
               >
@@ -374,10 +374,10 @@ export default function CodeShare() {
               </button>
               {shareMenuOpen && (
                 <div className="share-dropdown-menu">
-                  <a 
-                    href={whatsappUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="share-dropdown-item"
                     onClick={() => setShareMenuOpen(false)}
                   >
@@ -385,8 +385,8 @@ export default function CodeShare() {
                     <span>Share via WhatsApp</span>
                   </a>
                   {navigator.share && (
-                    <button 
-                      className="share-dropdown-item-btn" 
+                    <button
+                      className="share-dropdown-item-btn"
                       type="button"
                       onClick={() => {
                         setShareMenuOpen(false);
@@ -394,7 +394,7 @@ export default function CodeShare() {
                           title: 'DevMint Live Workspace',
                           text: 'Collaborate with me on this real-time DevMint workspace:',
                           url: shareUrl
-                        }).catch(() => {});
+                        }).catch(() => { });
                       }}
                     >
                       <Share2 size={14} />
@@ -410,10 +410,10 @@ export default function CodeShare() {
 
       {/* Main Workspace Layout */}
       <div className="share-layout flex-1">
-        
+
         {/* Left Side: Tabs + Editor */}
         <div className="workspace-panel glass-panel" style={{ flex: 1 }}>
-          
+
           {/* Tabs Row */}
           <div className="editor-tabs-container custom-scrollbar">
             {tabs.map((tab) => (

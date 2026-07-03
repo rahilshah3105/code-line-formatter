@@ -41,24 +41,24 @@ export default function CodeFormatter() {
   ];
 
   return (
-    <div className="tool-page h-full flex flex-col">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>Code Beautifier & Formatter</h2>
           <p>Instantly format your dirty code into clean, readable syntax. Supports JS, TS, HTML, CSS, JSON.</p>
         </div>
         <div className="flex gap-2 relative z-20">
-          <CustomSelect 
+          <CustomSelect
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
             options={LANGUAGES.map(lang => ({ value: lang.id, label: lang.name }))}
           />
           <button className="secondary-button flex items-center gap-2" onClick={copyToClipboard}>
-            {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />} 
+            {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
             {copied ? 'Copied' : 'Copy'}
           </button>
           <button className="primary-button flex items-center gap-2" onClick={formatCode}>
-            <AlignLeft size={16} className='flex-shrink-0'/> Format Code
+            <AlignLeft size={16} className='flex-shrink-0' /> Format Code
           </button>
         </div>
       </header>
