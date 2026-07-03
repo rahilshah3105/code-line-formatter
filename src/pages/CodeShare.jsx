@@ -37,6 +37,7 @@ export default function CodeShare() {
   const [syncStatus, setSyncStatus] = useState('local'); // 'local' | 'syncing' | 'synced' | 'error'
   const [copied, setCopied] = useState(false);
   const [editorCopied, setEditorCopied] = useState(false);
+  const [hasUncopiedChanges, setHasUncopiedChanges] = useState(false);
   const [toast, setToast] = useState(null);
   const [toastHiding, setToastHiding] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
@@ -162,6 +163,8 @@ export default function CodeShare() {
 
             if (localSerialized !== remoteSerialized) {
               setTabs(data.tabs);
+              setHasUncopiedChanges(true);
+              showToast('Collaborator updated the workspace content!');
             }
             if (data.activeTabId && data.activeTabId !== activeTabIdRef.current) {
               setActiveTabId(data.activeTabId);
@@ -304,6 +307,7 @@ export default function CodeShare() {
     if (!activeTab) return;
     navigator.clipboard.writeText(activeTab.content || '');
     setEditorCopied(true);
+    setHasUncopiedChanges(false);
     setTimeout(() => setEditorCopied(false), 2000);
     showToast('Active tab content copied to clipboard!');
   };
@@ -474,26 +478,39 @@ export default function CodeShare() {
                 ]}
               />
             </div>
-             <div className="controls-right">
-               <button
-                 className="secondary-button flex items-center gap-1.5"
-                 style={{ padding: '4px 10px', fontSize: '0.8rem', height: '28px', minWidth: 'fit-content' }}
-                 onClick={copyActiveTabContent}
-                 title="Copy active tab editor content to clipboard"
-               >
-                 {editorCopied ? <Check size={14} /> : <Copy size={14} />}
-                 <span>{editorCopied ? 'Copied' : 'Copy Content'}</span>
-               </button>
-               <span className="status-pill" title="Status of connection and backend saving">
-                 <span className={`status-dot ${syncStatus}`} />
-                 <span>
-                   {syncStatus === 'local' && 'Local Workspace'}
-                   {syncStatus === 'syncing' && 'Saving Changes...'}
-                   {syncStatus === 'synced' && 'Synced & Live'}
-                   {syncStatus === 'error' && 'Sync Connection Error'}
-                 </span>
-               </span>
-             </div>
+              <div className="controls-right">
+                <button
+                  className={`secondary-button flex items-center gap-1.5 transition-all ${
+                    hasUncopiedChanges ? 'border-[var(--accent-primary)] shadow-[0_0_8px_rgba(59,130,246,0.3)] animate-pulse' : ''
+                  }`}
+                  style={{ 
+                    padding: '4px 10px', 
+                    fontSize: '0.8rem', 
+                    height: '28px', 
+                    minWidth: 'fit-content'
+                  }}
+                  onClick={copyActiveTabContent}
+                  title={hasUncopiedChanges ? "New remote changes! Copy active tab content" : "Copy active tab editor content to clipboard"}
+                >
+                  {editorCopied ? <Check size={14} /> : <Copy size={14} />}
+                  <span>{editorCopied ? 'Copied' : 'Copy Content'}</span>
+                  {hasUncopiedChanges && (
+                    <span className="relative flex h-2 w-2 ml-1 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent-primary)] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent-primary)]"></span>
+                    </span>
+                  )}
+                </button>
+                <span className="status-pill" title="Status of connection and backend saving">
+                  <span className={`status-dot ${syncStatus}`} />
+                  <span>
+                    {syncStatus === 'local' && 'Local Workspace'}
+                    {syncStatus === 'syncing' && 'Saving Changes...'}
+                    {syncStatus === 'synced' && 'Synced & Live'}
+                    {syncStatus === 'error' && 'Sync Connection Error'}
+                  </span>
+                </span>
+              </div>
           </div>
 
           {/* Monaco Editor Pane */}

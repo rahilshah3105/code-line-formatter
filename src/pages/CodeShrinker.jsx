@@ -67,19 +67,29 @@ export default function CodeShrinker() {
           <h2>Code \\n Shrinker</h2>
           <p>Easily convert your multi-line code/JSON into a single-line string with escaped newlines.</p>
         </div>
-        <button className="primary-button" onClick={copyToClipboard}>Copy Output</button>
+        <button type="button" className="primary-button" onClick={copyToClipboard}>Copy Output</button>
       </header>
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-2">
-        <div className="tabs">
+      <div className="flex flex-col sm:flex-row sm:items-stretch sm:items-center gap-4 mb-2 border-b border-[var(--border-light)] w-full pb-[1px]">
+        <div className="flex gap-6">
           <button 
-            className={`tab-btn ${tab === 'add' ? 'active' : ''}`}
+            type="button"
+            className={`pb-2 px-1 text-sm font-medium transition-all border-b-2 -mb-[1px] cursor-pointer ${
+              tab === 'add' 
+                ? 'border-[var(--accent-primary)] text-[var(--text-primary)] font-semibold' 
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
             onClick={() => handleTabChange('add')}
           >
             Add \n (Shrink)
           </button>
           <button 
-            className={`tab-btn ${tab === 'remove' ? 'active' : ''}`}
+            type="button"
+            className={`pb-2 px-1 text-sm font-medium transition-all border-b-2 -mb-[1px] cursor-pointer ${
+              tab === 'remove' 
+                ? 'border-[var(--accent-primary)] text-[var(--text-primary)] font-semibold' 
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
             onClick={() => handleTabChange('remove')}
           >
             Remove \n (Expand)
