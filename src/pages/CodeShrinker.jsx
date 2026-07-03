@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Check } from 'lucide-react';
 import ResourceLinks from '../components/ResourceLinks';
 import './ToolPage.css';
 
@@ -97,13 +98,20 @@ export default function CodeShrinker() {
         </div>
         {tab === 'add' && (
           <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors shrink-0">
-            <input 
-              type="checkbox" 
-              className="accent-[var(--accent-primary)] cursor-pointer shrink-0"
-              checked={removeIndentation}
-              onChange={handleCheckboxChange}
-            />
-            Remove leading indentation (spaces/tabs)
+            <div className="relative flex items-center justify-center w-4 h-4 rounded border border-[var(--border-light)] bg-white/5 hover:border-[var(--accent-primary)] transition-all">
+              <input 
+                type="checkbox" 
+                className="sr-only"
+                checked={removeIndentation}
+                onChange={handleCheckboxChange}
+              />
+              {removeIndentation && (
+                <div className="absolute inset-0 flex items-center justify-center bg-[var(--accent-primary)] rounded">
+                  <Check size={12} className="text-[var(--bg-main)] stroke-[3]" />
+                </div>
+              )}
+            </div>
+            <span>Remove leading indentation (spaces/tabs)</span>
           </label>
         )}
       </div>
