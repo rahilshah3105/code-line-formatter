@@ -36,6 +36,7 @@ export default function CodeShare() {
   const [roomId, setRoomId] = useState(null);
   const [syncStatus, setSyncStatus] = useState('local'); // 'local' | 'syncing' | 'synced' | 'error'
   const [copied, setCopied] = useState(false);
+  const [editorCopied, setEditorCopied] = useState(false);
   const [toast, setToast] = useState(null);
   const [toastHiding, setToastHiding] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
@@ -298,6 +299,15 @@ export default function CodeShare() {
     showToast('Workspace URL copied to clipboard!');
   };
 
+  const copyActiveTabContent = () => {
+    const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
+    if (!activeTab) return;
+    navigator.clipboard.writeText(activeTab.content || '');
+    setEditorCopied(true);
+    setTimeout(() => setEditorCopied(false), 2000);
+    showToast('Active tab content copied to clipboard!');
+  };
+
   const resetWorkspace = () => {
     navigate('/share');
   };
@@ -464,17 +474,26 @@ export default function CodeShare() {
                 ]}
               />
             </div>
-            <div className="controls-right">
-              <span className="status-pill" title="Status of connection and backend saving">
-                <span className={`status-dot ${syncStatus}`} />
-                <span>
-                  {syncStatus === 'local' && 'Local Workspace'}
-                  {syncStatus === 'syncing' && 'Saving Changes...'}
-                  {syncStatus === 'synced' && 'Synced & Live'}
-                  {syncStatus === 'error' && 'Sync Connection Error'}
-                </span>
-              </span>
-            </div>
+             <div className="controls-right">
+               <button
+                 className="secondary-button flex items-center gap-1.5"
+                 style={{ padding: '4px 10px', fontSize: '0.8rem', height: '28px', minWidth: 'fit-content' }}
+                 onClick={copyActiveTabContent}
+                 title="Copy active tab editor content to clipboard"
+               >
+                 {editorCopied ? <Check size={14} /> : <Copy size={14} />}
+                 <span>{editorCopied ? 'Copied' : 'Copy Content'}</span>
+               </button>
+               <span className="status-pill" title="Status of connection and backend saving">
+                 <span className={`status-dot ${syncStatus}`} />
+                 <span>
+                   {syncStatus === 'local' && 'Local Workspace'}
+                   {syncStatus === 'syncing' && 'Saving Changes...'}
+                   {syncStatus === 'synced' && 'Synced & Live'}
+                   {syncStatus === 'error' && 'Sync Connection Error'}
+                 </span>
+               </span>
+             </div>
           </div>
 
           {/* Monaco Editor Pane */}

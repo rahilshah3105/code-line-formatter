@@ -121,7 +121,7 @@ export default function JSRunner() {
   ];
 
   return (
-    <div className="tool-page">
+    <div className="tool-page h-full flex flex-col overflow-y-auto">
       <header className="tool-header">
         <div>
           <h2>JavaScript Runner (Browser)</h2>
