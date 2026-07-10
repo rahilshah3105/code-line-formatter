@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import ResourceLinks from '../components/ResourceLinks';
 import CustomSelect from '../components/CustomSelect';
@@ -8,8 +9,30 @@ import './ToolPage.css';
 
 export default function MultiLangEditor() {
   const { theme } = useTheme();
-  const [language, setLanguage] = useState(LANGUAGES[0].id);
+  const location = useLocation();
+
+  const [language, setLanguage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+      if (found) return found.id;
+    }
+    return LANGUAGES[0].id;
+  });
+
   const [code, setCode] = useState('// Select a language and start typing...\n');
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+      if (found && found.id !== language) {
+        setLanguage(found.id);
+      }
+    }
+  }, [location.search, language]);
 
   const resources = [
     { title: "Monaco Editor Supported Languages", url: "https://github.com/microsoft/monaco-editor#documentation" }

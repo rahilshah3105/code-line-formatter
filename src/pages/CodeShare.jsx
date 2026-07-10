@@ -29,9 +29,27 @@ export default function CodeShare() {
   const roomIdFromPath = params.id || (rawSharePath ? rawSharePath.split('/').filter(Boolean)[0] : null) || shareQueryId;
 
   // State Management
-  const [tabs, setTabs] = useState([
-    { id: '1', name: 'Notes.txt', content: '// Write or paste anything here...\n', language: 'plaintext' }
-  ]);
+  const [tabs, setTabs] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+      if (found) {
+        const extMap = {
+          python: 'py', javascript: 'js', typescript: 'ts', java: 'java', cpp: 'cpp', c: 'c',
+          csharp: 'cs', go: 'go', rust: 'rs', php: 'php', ruby: 'rb', sql: 'sql', html: 'html',
+          css: 'css', json: 'json', yaml: 'yml', markdown: 'md', xml: 'xml', shell: 'sh'
+        };
+        const ext = extMap[found.id] || 'txt';
+        return [
+          { id: '1', name: `Notes.${ext}`, content: `// Write or paste your ${found.name} code here...\n`, language: found.id }
+        ];
+      }
+    }
+    return [
+      { id: '1', name: 'Notes.txt', content: '// Write or paste anything here...\n', language: 'plaintext' }
+    ];
+  });
   const [activeTabId, setActiveTabId] = useState('1');
   const [roomId, setRoomId] = useState(null);
   const [syncStatus, setSyncStatus] = useState('local'); // 'local' | 'syncing' | 'synced' | 'error'

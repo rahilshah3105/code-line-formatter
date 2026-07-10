@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { AlignLeft, Copy, Check } from 'lucide-react';
 import ResourceLinks from '../components/ResourceLinks';
@@ -9,9 +10,31 @@ import './ToolPage.css';
 
 export default function CodeFormatter() {
   const { theme } = useTheme();
+  const location = useLocation();
   const editorRef = useRef(null);
-  const [language, setLanguage] = useState('javascript');
+
+  const [language, setLanguage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+      if (found) return found.id;
+    }
+    return 'javascript';
+  });
+
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+      if (found && found.id !== language) {
+        setLanguage(found.id);
+      }
+    }
+  }, [location.search, language]);
 
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;

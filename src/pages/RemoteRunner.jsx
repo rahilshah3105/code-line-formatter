@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import ResourceLinks from '../components/ResourceLinks';
 import CustomSelect from '../components/CustomSelect';
@@ -39,10 +40,18 @@ const STORAGE_KEY = 'devtoolkit_runner_lang';
 
 export default function RemoteRunner() {
   const { theme } = useTheme();
+  const location = useLocation();
 
-  // Restore last selected language from localStorage
+  // Restore last selected language from localStorage or URL parameter
   const getInitialLang = () => {
     try {
+      const params = new URLSearchParams(window.location.search);
+      const langParam = params.get('lang');
+      if (langParam) {
+        const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+        if (found) return found;
+      }
+
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const found = LANGUAGES.find(l => l.id === saved);
@@ -60,6 +69,20 @@ export default function RemoteRunner() {
   const [copied, setCopied] = useState(false);
   const editorRef = useRef(null);
   const executeCodeRef = useRef(() => { });
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+      if (found && found.id !== language.id) {
+        setLanguage(found);
+        setCode(DEFAULT_CODE[found.id] || '');
+        setOutput('');
+        setErrorMsg('');
+      }
+    }
+  }, [location.search, language.id]);
 
   const handleLanguageChange = (e) => {
     const langId = e.target.value;

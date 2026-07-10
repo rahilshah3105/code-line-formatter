@@ -205,9 +205,64 @@ export default function Layout() {
   const openSearch = () => setSearchOpen(true);
 
   const goToFeature = useCallback((path) => {
-    navigate(path);
+    const query = searchText.trim().toLowerCase();
+    
+    const knownLanguages = [
+      { key: 'python', lang: 'python' },
+      { key: 'javascript', lang: 'javascript' },
+      { key: 'js', lang: 'javascript' },
+      { key: 'typescript', lang: 'typescript' },
+      { key: 'ts', lang: 'typescript' },
+      { key: 'node', lang: 'javascript' },
+      { key: 'java', lang: 'java' },
+      { key: 'c++', lang: 'cpp' },
+      { key: 'cpp', lang: 'cpp' },
+      { key: 'c#', lang: 'csharp' },
+      { key: 'csharp', lang: 'csharp' },
+      { key: 'golang', lang: 'go' },
+      { key: 'go', lang: 'go' },
+      { key: 'rust', lang: 'rust' },
+      { key: 'php', lang: 'php' },
+      { key: 'ruby', lang: 'ruby' },
+      { key: 'sql', lang: 'sql' },
+      { key: 'html', lang: 'html' },
+      { key: 'css', lang: 'css' },
+      { key: 'json', lang: 'json' },
+      { key: 'yaml', lang: 'yaml' },
+      { key: 'markdown', lang: 'markdown' },
+      { key: 'md', lang: 'markdown' },
+      { key: 'xml', lang: 'xml' },
+      { key: 'shell', lang: 'shell' },
+      { key: 'bash', lang: 'shell' },
+      { key: 'sh', lang: 'shell' }
+    ];
+
+    let detectedLang = null;
+    const sortedLanguages = [...knownLanguages].sort((a, b) => b.key.length - a.key.length);
+    for (const item of sortedLanguages) {
+      let match = false;
+      if (item.key === 'c++' || item.key === 'c#') {
+        const escaped = item.key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(?:\\b|\\s|^)${escaped}(?:\\b|\\s|$)`, 'i');
+        match = regex.test(query);
+      } else {
+        const regex = new RegExp(`\\b${item.key}\\b`, 'i');
+        match = regex.test(query);
+      }
+      if (match) {
+        detectedLang = item.lang;
+        break;
+      }
+    }
+
+    const pagesSupportingLang = ['/remote-runner', '/editor', '/formatter', '/diff', '/share'];
+    if (detectedLang && pagesSupportingLang.includes(path)) {
+      navigate(`${path}?lang=${detectedLang}`);
+    } else {
+      navigate(path);
+    }
     closeSearch();
-  }, [navigate, closeSearch]);
+  }, [searchText, navigate, closeSearch]);
 
   // Auto-collapse sidebar on smaller screens
   useEffect(() => {
@@ -273,11 +328,8 @@ export default function Layout() {
   }, [searchText]);
 
   useEffect(() => {
-    if (searchOpen) {
-      const timer = setTimeout(() => closeSearch(), 0);
-      return () => clearTimeout(timer);
-    }
-  }, [location.pathname, searchOpen, closeSearch]);
+    closeSearch();
+  }, [location.pathname, closeSearch]);
 
   const handleSearchInputKeyDown = (event) => {
     if (!filteredFeatures.length) return;

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Editor, DiffEditor } from '@monaco-editor/react';
 import ResourceLinks from '../components/ResourceLinks';
 import CustomSelect from '../components/CustomSelect';
@@ -8,9 +9,31 @@ import './ToolPage.css';
 
 export default function DiffChecker() {
   const { theme } = useTheme();
-  const [language, setLanguage] = useState(LANGUAGES[0].id);
+  const location = useLocation();
+
+  const [language, setLanguage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+      if (found) return found.id;
+    }
+    return LANGUAGES[0].id;
+  });
+
   const [originalCode, setOriginalCode] = useState('// Original Text\nfunction greet() {\n  console.log("Hello, world!");\n}');
   const [modifiedCode, setModifiedCode] = useState('// Modified Text\nfunction greet(name) {\n  console.log(`Hello, ${name}!`);\n}');
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const langParam = params.get('lang');
+    if (langParam) {
+      const found = LANGUAGES.find(l => l.id === langParam.toLowerCase());
+      if (found && found.id !== language) {
+        setLanguage(found.id);
+      }
+    }
+  }, [location.search, language]);
 
   const resources = [
     { title: "Understanding Git Diff", url: "https://git-scm.com/docs/git-diff" },
